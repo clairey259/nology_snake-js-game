@@ -9,14 +9,14 @@
   </head>
   <body>
     <nav>
-      <button onclick="snakeOne.move()">Start Game</button>
+      <button onclick="handleStart(event)">Start Game</button>
       <h1>snake</h1>
-      <button onclick="c.clearRect(0, 0, innerHeight, innerHeight)">New Game</button>
+      <button onclick="document.location.reload()">New Game</button>
     </nav>
     <main>
       <canvas></canvas>
     </main>
     <footer>this is the footer</footer>
-    <script src="script.js"></script>
+    <script src="script2.js"></script>
   </body>
 </html>

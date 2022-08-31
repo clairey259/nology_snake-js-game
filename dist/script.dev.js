@@ -14,62 +14,55 @@ function getRandomColor() {
 
 
 var canvas = document.querySelector("canvas");
-canvas.width = 0.8 * window.innerWidth;
+canvas.width = 0.9 * window.innerWidth;
 canvas.height = 0.8 * window.innerHeight;
-var c = canvas.getContext("2d"); // CREATING SNAKE OBECT
+var c = canvas.getContext("2d"); //GLOBAL VARIABLES
+// RANDOMISING 
 
-function Snake(x, y, dx, dy, w, h, colour) {
+var randomX = Math.random() * canvas.width; //- radius * 2) + radius;
+
+var randomY = Math.random() * canvas.height; //- radius * 2) + radius;
+// CREATING SNAKE OBECT
+
+function Snake(x, y, w, h, v, colour) {
   this.colour = colour;
   this.x = x;
   this.y = y;
-  this.dx = dx;
-  this.dy = dy;
+  this.dx = v;
+  this.dy = v;
   this.w = w;
-  this.h = h;
+  this.h = h; //gets snake shape
 
   this.draw = function () {
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.fillStyle = this.colour;
     c.fillRect(this.x, this.y, this.w, this.h);
-  };
+  }; // gets snake to move and alerts when hits edge
+
 
   this.move = function () {
-    if (this.x + this.h > canvas.width || this.x - this.h < 0) {
-      this.dx = -this.dx;
-    }
-
-    if (this.y + this.h > canvas.height || this.y - this.h < 0) {
-      this.dy = -this.dy;
+    if (this.x > canvas.width || this.x < 0 || this.y > canvas.height || this.y < 0) {//alert ("Game over")
     }
 
     this.x += this.dx;
     this.y += this.dy;
     this.draw();
   };
-} // RANDOMISING WHERE SNAKE APPEARS (and variables)
+} // NEW SNAKE
 
 
-var velocity = 8;
-var randomX = Math.random() * canvas.width; //- radius * 2) + radius;
+var snakeOne = new Snake(randomX / 2, randomY / 2, 10, 80, 8, "black");
+snakeOne.move();
+var snakeRainbow = new Snake(100, 100, 10, 80, 8, getRandomColor());
+snakeRainbow.move(); // ANIMATE SNAKE
 
-var randomY = Math.random() * canvas.height; //- radius * 2) + radius;
+function animate() {
+  requestAnimationFrame(animate);
+  c.clearRect(0, 0, innerWidth, innerHeight);
+  snakeOne.move();
+} // START BUTTON FUNCTION
 
-var randomDx = (Math.random() - 0.5) * velocity;
-var randomDy = (Math.random() - 0.5) * velocity; // function animate() {
-//     requestAnimationFrame();
-//     c.clearRect(0, 0, innerWidth, innerHeight);
-// }
-// NEW SNAKE
 
-var snakeOne = new Snake(randomX, randomY, randomDx, randomDy, 10, 80, 'black');
-snakeOne.move(); //snakeOne.move()
-
-console.log(snakeOne.x); // ANIMATE SNAKE
-// function animate() {
-//     console.log("hello")
-//     requestAnimationFrame(animate);
-//    // c.clearRect(0, 0, innerWidth, innerHeight);
-//    snakeOne.draw()
-// }
-//var snakeRainbow = new Snake(100, 100, 10, 80, getRandomColor())
-//snakeOne.draw()
+function handleStart(event) {
+  animate();
+}
