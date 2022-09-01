@@ -2,7 +2,8 @@
 
 // GLOBAL VARIABLES
 var snakeColour = "black";
-var velocity = 300; // ANIMATION CANVAS
+var velocity = 100;
+var initialSnakeLength = 6; // ANIMATION CANVAS
 
 var canvas = document.querySelector("canvas");
 canvas.width = 0.9 * window.innerWidth;
@@ -37,11 +38,25 @@ function createInitialSnake(size) {
   }
 
   return snakeArr;
-} // MOVING THE SNAKE
+} // CONSTRUCTING THE CHERRY
 
+
+function roundUpNearest10(num) {
+  return Math.ceil(num / 10) * 10;
+}
+
+function randomX() {
+  return roundUpNearest10(Math.random() * (canvas.width - 20) + 10);
+}
+
+function randomY() {
+  return roundUpNearest10(Math.random() * (canvas.height - 20) + 10);
+}
+
+var cherry = new BasicBox(randomX(), randomY(), 10, 10, "red"); // MOVING THE SNAKE
 
 function Snake() {
-  this.array = createInitialSnake(6);
+  this.array = createInitialSnake(initialSnakeLength);
   this.direction = "down";
 
   this.changeDirection = function (direction) {
@@ -66,44 +81,39 @@ function Snake() {
     });
   };
 
-  console.log(this.array);
+  this.append = function (element) {
+    if (this.direction === "down") {
+      element.y = this.array[0].y + 10;
+      element.x = this.array[0].x;
+    } else if (this.direction === "up") {
+      element.y = this.array[0].y - 10;
+      element.x = this.array[0].x;
+    } else if (this.direction === "right") {
+      element.x = this.array[0].x + 10;
+      element.y = this.array[0].y;
+    } else if (this.direction === "left") {
+      element.x = this.array[0].x - 10;
+      element.y = this.array[0].y;
+    }
+
+    this.array.unshift(element);
+  };
 
   this.move = function () {
-    if (this.direction === "down") {
-      var lastElement = this.array.pop();
-      lastElement.y = this.array[0].y + 10;
-      lastElement.x = this.array[0].x;
-      this.array.unshift(lastElement);
-    } else if (this.direction === "up") {
-      var _lastElement = this.array.pop();
-
-      _lastElement.y = this.array[0].y - 10;
-      _lastElement.x = this.array[0].x;
-      this.array.unshift(_lastElement);
-    } else if (this.direction === "right") {
-      var _lastElement2 = this.array.pop();
-
-      _lastElement2.x = this.array[0].x + 10;
-      _lastElement2.y = this.array[0].y;
-      this.array.unshift(_lastElement2);
-    } else if (this.direction === "left") {
-      var _lastElement3 = this.array.pop();
-
-      _lastElement3.x = this.array[0].x - 10;
-      _lastElement3.y = this.array[0].y;
-      this.array.unshift(_lastElement3);
-    }
+    var lastElement = this.array.pop();
+    this.append(lastElement);
   };
-} // DRAWING THE CHERRY
+
+  this.eat = function () {
+    snake.append(new BasicBox(10, 10, 10, 10, "black"));
+  };
+} // START BUTTON FUNCTION
 
 
-var randomX = Math.random() * (canvas.width - 20) + 10;
-var randomY = Math.random() * (canvas.height - 20) + 10;
-var cherry = new BasicBox(randomX, randomY, 10, 10, "red"); // if (cherry.x === snakeArr[0].x && cherry.y === snakeArr[0].y) {
-//   snakeArr.unshift(cherry);
-// //   cherry.draw();
-// }
-//ANIMATING THE GAME
+function handleStart(event) {
+  animate();
+} //ANIMATING THE GAME
+
 
 var snake = new Snake();
 
@@ -112,14 +122,45 @@ function animate() {
 
   snake.draw();
   cherry.draw();
-  snake.move();
+
+  if (cherry.x === snake.array[0].x && cherry.y === snake.array[0].y) {
+    snake.eat();
+    cherry.x = randomX();
+    cherry.y = randomY();
+  } else {
+    snake.move();
+  }
+
   snake.changeDirection();
   setTimeout(function () {
-    requestAnimationFrame(animate);
-  }, velocity);
-} // START BUTTON FUNCTION
+    if (isgameOver()) {
+      gameOverDisplay();
+    } else requestAnimationFrame(animate);
+  }, velocity); // DISPLAY SCORE
+
+  var Currentscore = snake.array.length - initialSnakeLength;
+  var score = document.getElementById("score");
+  score.innerHTML = "Score: ".concat(Currentscore);
+} // GAME OVER
 
 
-function handleStart(event) {
-  animate();
+function gameOverDisplay() {
+  c.font = "bold 70px mono";
+  c.fillStyle = "#8b0000";
+  c.textAlign = "center";
+  c.fillText("Game Over", canvas.width / 2, canvas.height / 2);
+}
+
+var isgameOver = function isgameOver() {
+  if (snake.array[0].x < 0 || snake.array[0].y < 0 || snake.array[0].x > canvas.width || snake.array[0].y > canvas.height) {
+    return true;
+  } else return false;
+};
+
+function collision(x, y) {
+  for (var i = 1; i < snake.length; i++) {
+    if (x == snake[i].x && y == snake[i].y) return true;
+  }
+
+  return false;
 }

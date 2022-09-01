@@ -1,6 +1,7 @@
 // GLOBAL VARIABLES
 var snakeColour = "black";
-var velocity = 300;
+var velocity = 100;
+var initialSnakeLength = 6;
 
 // ANIMATION CANVAS
 var canvas = document.querySelector("canvas");
@@ -37,9 +38,23 @@ function createInitialSnake(size) {
   return snakeArr;
 }
 
+
+// CONSTRUCTING THE CHERRY
+function roundUpNearest10(num) {
+    return Math.ceil(num / 10) * 10;
+  }
+  function randomX() {
+    return roundUpNearest10(Math.random() * (canvas.width - 20) + 10);
+  }
+  function randomY() {
+    return roundUpNearest10(Math.random() * (canvas.height - 20) + 10);
+  }
+  var cherry = new BasicBox(randomX(), randomY(), 10, 10, "red");
+  
+
 // MOVING THE SNAKE
 function Snake() {
-  this.array = createInitialSnake(6);
+  this.array = createInitialSnake(initialSnakeLength);
   this.direction = "down";
 
   this.changeDirection = function (direction) {
@@ -59,42 +74,38 @@ function Snake() {
   this.draw = function () {
     this.array.forEach((element) => element.draw());
   };
-  console.log(this.array);
-  this.move = function () {
+
+  this.append = function (element) {
     if (this.direction === "down") {
-      const lastElement = this.array.pop();
-      lastElement.y = this.array[0].y + 10;
-      lastElement.x = this.array[0].x;
-      this.array.unshift(lastElement);
+      element.y = this.array[0].y + 10;
+      element.x = this.array[0].x;
     } else if (this.direction === "up") {
-      const lastElement = this.array.pop();
-      lastElement.y = this.array[0].y - 10;
-      lastElement.x = this.array[0].x;
-      this.array.unshift(lastElement);
+      element.y = this.array[0].y - 10;
+      element.x = this.array[0].x;
     } else if (this.direction === "right") {
-      const lastElement = this.array.pop();
-      lastElement.x = this.array[0].x + 10;
-      lastElement.y = this.array[0].y;
-      this.array.unshift(lastElement);
+      element.x = this.array[0].x + 10;
+      element.y = this.array[0].y;
     } else if (this.direction === "left") {
-      const lastElement = this.array.pop();
-      lastElement.x = this.array[0].x - 10;
-      lastElement.y = this.array[0].y;
-      this.array.unshift(lastElement);
+      element.x = this.array[0].x - 10;
+      element.y = this.array[0].y;
     }
+    this.array.unshift(element);
+  };
+
+  this.move = function () {
+    const lastElement = this.array.pop();
+    this.append(lastElement);
+  };
+
+  this.eat = function () {
+    snake.append(new BasicBox(10, 10, 10, 10, "black"));
   };
 }
 
-// DRAWING THE CHERRY
-
-var randomX = Math.random() * (canvas.width - 20) + 10;
-var randomY = Math.random() * (canvas.height - 20) + 10;
-var cherry = new BasicBox(randomX, randomY, 10, 10, "red");
-
-// if (cherry.x === snakeArr[0].x && cherry.y === snakeArr[0].y) {
-//   snakeArr.unshift(cherry);
-// //   cherry.draw();
-// }
+// START BUTTON FUNCTION
+function handleStart(event) {
+  animate();
+}
 
 //ANIMATING THE GAME
 const snake = new Snake();
@@ -102,14 +113,49 @@ function animate() {
   c.clearRect(0, 0, canvas.width, canvas.height); //  CLEARS CANVAS
   snake.draw();
   cherry.draw();
-  snake.move();
+  if (cherry.x === snake.array[0].x && cherry.y === snake.array[0].y) {
+    snake.eat();
+    cherry.x = randomX();
+    cherry.y = randomY();
+  } else {
+    snake.move();
+  }
   snake.changeDirection();
   setTimeout(function () {
-    requestAnimationFrame(animate);
+    if (isgameOver()){
+        gameOverDisplay();
+    } else requestAnimationFrame(animate)
   }, velocity);
+
+  // DISPLAY SCORE
+  let Currentscore = snake.array.length - initialSnakeLength;
+  var score = document.getElementById("score");
+  score.innerHTML = `Score: ${Currentscore}`;
+
 }
 
-// START BUTTON FUNCTION
-function handleStart(event) {
-  animate();
+// GAME OVER
+function gameOverDisplay() {
+    
+    c.font = "bold 70px mono";
+    c.fillStyle = "#8b0000";
+    c.textAlign = "center";
+    c.fillText("Game Over", canvas.width/2, canvas.height/2);
 }
+
+var isgameOver = () => {
+  if (
+    snake.array[0].x < 0 ||
+    snake.array[0].y < 0 ||
+    snake.array[0].x > canvas.width ||
+    snake.array[0].y > canvas.height 
+  ) {
+    return true
+  } else return false
+};
+
+function collision(x, y) {
+	for(let i = 1; i < snake.length; i++) {
+		if(x == snake[i].x && y == snake[i].y) return true;
+	}
+	return false;}
