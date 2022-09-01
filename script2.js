@@ -38,19 +38,17 @@ function createInitialSnake(size) {
   return snakeArr;
 }
 
-
 // CONSTRUCTING THE CHERRY
 function roundUpNearest10(num) {
-    return Math.ceil(num / 10) * 10;
-  }
-  function randomX() {
-    return roundUpNearest10(Math.random() * (canvas.width - 20) + 10);
-  }
-  function randomY() {
-    return roundUpNearest10(Math.random() * (canvas.height - 20) + 10);
-  }
-  var cherry = new BasicBox(randomX(), randomY(), 10, 10, "red");
-  
+  return Math.ceil(num / 10) * 10;
+}
+function randomX() {
+  return roundUpNearest10(Math.random() * (canvas.width - 20) + 10);
+}
+function randomY() {
+  return roundUpNearest10(Math.random() * (canvas.height - 20) + 10);
+}
+var cherry = new BasicBox(randomX(), randomY(), 10, 10, "red");
 
 // MOVING THE SNAKE
 function Snake() {
@@ -122,25 +120,23 @@ function animate() {
   }
   snake.changeDirection();
   setTimeout(function () {
-    if (isgameOver()){
-        gameOverDisplay();
-    } else requestAnimationFrame(animate)
+    if (isgameOver()) {
+      gameOverDisplay();
+    } else requestAnimationFrame(animate);
   }, velocity);
 
   // DISPLAY SCORE
   let Currentscore = snake.array.length - initialSnakeLength;
   var score = document.getElementById("score");
   score.innerHTML = `Score: ${Currentscore}`;
-
 }
 
 // GAME OVER
 function gameOverDisplay() {
-    
-    c.font = "bold 70px mono";
-    c.fillStyle = "#8b0000";
-    c.textAlign = "center";
-    c.fillText("Game Over", canvas.width/2, canvas.height/2);
+  c.font = "bold 70px mono";
+  c.fillStyle = "#8b0000";
+  c.textAlign = "center";
+  c.fillText("Game Over", canvas.width / 2, canvas.height / 2);
 }
 
 var isgameOver = () => {
@@ -148,14 +144,16 @@ var isgameOver = () => {
     snake.array[0].x < 0 ||
     snake.array[0].y < 0 ||
     snake.array[0].x > canvas.width ||
-    snake.array[0].y > canvas.height 
+    snake.array[0].y > canvas.height ||
+    collision(snake.array[0].x, snake.array[0].y)
   ) {
-    return true
-  } else return false
+    return true;
+  } else return false;
 };
 
 function collision(x, y) {
-	for(let i = 1; i < snake.length; i++) {
-		if(x == snake[i].x && y == snake[i].y) return true;
-	}
-	return false;}
+  for (let i = 1; i < snake.array.length; i++) {
+    if (x == snake.array[i].x && y == snake.array[i].y) return true;
+  }
+  return false;
+}

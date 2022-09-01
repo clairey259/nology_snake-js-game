@@ -152,14 +152,14 @@ function gameOverDisplay() {
 }
 
 var isgameOver = function isgameOver() {
-  if (snake.array[0].x < 0 || snake.array[0].y < 0 || snake.array[0].x > canvas.width || snake.array[0].y > canvas.height) {
+  if (snake.array[0].x < 0 || snake.array[0].y < 0 || snake.array[0].x > canvas.width || snake.array[0].y > canvas.height || collision(snake.array[0].x, snake.array[0].y)) {
     return true;
   } else return false;
 };
 
 function collision(x, y) {
-  for (var i = 1; i < snake.length; i++) {
-    if (x == snake[i].x && y == snake[i].y) return true;
+  for (var i = 1; i < snake.array.length; i++) {
+    if (x == snake.array[i].x && y == snake.array[i].y) return true;
   }
 
   return false;
