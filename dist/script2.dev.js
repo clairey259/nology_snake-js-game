@@ -7,7 +7,7 @@ var initialSnakeLength = 6; // ANIMATION CANVAS
 
 var canvas = document.querySelector("canvas");
 canvas.width = 0.9 * window.innerWidth;
-canvas.height = 0.75 * window.innerHeight;
+canvas.height = 0.70 * window.innerHeight;
 var c = canvas.getContext("2d"); // BASIC BOX OBJECT
 
 function BasicBox(x, y, h, w, colour) {
