@@ -1,13 +1,13 @@
 // GLOBAL VARIABLES
-var snakeColour = "black";
-var velocity = 100;
-var initialSnakeLength = 6;
+const snakeColour = "black";
+let velocity = 100;
+const initialSnakeLength = 6;
 
 // ANIMATION CANVAS
-var canvas = document.querySelector("canvas");
+const canvas = document.querySelector("canvas");
 canvas.width = 0.9 * window.innerWidth;
-canvas.height = 0.70 * window.innerHeight;
-var c = canvas.getContext("2d");
+canvas.height = 0.7 * window.innerHeight;
+const c = canvas.getContext("2d");
 
 // BASIC BOX OBJECT
 function BasicBox(x, y, h, w, colour) {
@@ -25,13 +25,13 @@ function BasicBox(x, y, h, w, colour) {
 
 // CONSTRUCTING THE SNAKE
 function createInitialSnake(size) {
-  var snakeArr = [];
-  var y = 100;
+  const snakeArr = [];
+  let y = 100;
   for (let i = 0; i < size; i++) {
-    var x = 100;
-    var h = 10;
-    var w = 10;
-    var colour = snakeColour;
+    const x = 100;
+    const h = 10;
+    const w = 10;
+    const colour = snakeColour;
     snakeArr.push(new BasicBox(x, y, h, w, colour));
     y -= 10;
   }
@@ -57,13 +57,13 @@ function Snake() {
 
   this.changeDirection = function (direction) {
     document.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowUp") {
+      if (event.key === "ArrowUp" && this.direction != "down") {
         this.direction = "up";
-      } else if (event.key === "ArrowDown") {
+      } else if (event.key === "ArrowDown" && this.direction != "up") {
         this.direction = "down";
-      } else if (event.key === "ArrowRight") {
+      } else if (event.key === "ArrowRight" && this.direction != "left") {
         this.direction = "right";
-      } else if (event.key === "ArrowLeft") {
+      } else if (event.key === "ArrowLeft" && this.direction != "right") {
         this.direction = "left";
       }
     });
@@ -105,6 +105,23 @@ function handleStart(event) {
   animate();
 }
 
+// DIFFICULTY
+const difficultyLevel = document.getElementById("difficultyLevel"); //js object
+const handleDifficultyChange = (event) => {
+  console.log("hello");
+  if (event.target.value == "slow") {
+    velocity = 150;
+  } else if (event.target.value == "medium") {
+    velocity = 100;
+  } else if (event.target.value == "fast") {
+    velocity = 50;
+  } else if (event.target.value == "turbo") {
+    velocity = 0;
+  }
+  return velocity;
+};
+difficultyLevel.addEventListener("change", handleDifficultyChange);
+
 //ANIMATING THE GAME
 const snake = new Snake();
 function animate() {
@@ -113,6 +130,7 @@ function animate() {
   cherry.draw();
   if (cherry.x === snake.array[0].x && cherry.y === snake.array[0].y) {
     snake.eat();
+    updateScore();
     cherry.x = randomX();
     cherry.y = randomY();
   } else {
@@ -124,11 +142,6 @@ function animate() {
       gameOverDisplay();
     } else requestAnimationFrame(animate);
   }, velocity);
-
-  // DISPLAY SCORE
-  let Currentscore = snake.array.length - initialSnakeLength;
-  var score = document.getElementById("score");
-  score.innerHTML = `Score: ${Currentscore}`;
 }
 
 // GAME OVER
@@ -139,7 +152,7 @@ function gameOverDisplay() {
   c.fillText("Game Over", canvas.width / 2, canvas.height / 2);
 }
 
-var isgameOver = () => {
+const isgameOver = () => {
   if (
     snake.array[0].x < 0 ||
     snake.array[0].y < 0 ||
@@ -157,3 +170,21 @@ function collision(x, y) {
   }
   return false;
 }
+
+// DISPLAY SCORE
+function updateScore(){
+const currentScore = snake.array.length - initialSnakeLength;
+const score = document.getElementById("score");
+score.innerHTML = `Score: ${currentScore}`;
+}
+// //HIGHSCORE
+// const highestScore = window.localStorage.setItem('highScore', currentScore);
+// function handleHighScore() {
+//   if (currentScore > highestScore){
+
+//     alert ("A new high score!")
+//   }
+//   scoresArr.forEach (element) {
+    
+//   }
+// }

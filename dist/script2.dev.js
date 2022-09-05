@@ -7,7 +7,7 @@ var initialSnakeLength = 6; // ANIMATION CANVAS
 
 var canvas = document.querySelector("canvas");
 canvas.width = 0.9 * window.innerWidth;
-canvas.height = 0.70 * window.innerHeight;
+canvas.height = 0.7 * window.innerHeight;
 var c = canvas.getContext("2d"); // BASIC BOX OBJECT
 
 function BasicBox(x, y, h, w, colour) {
@@ -63,13 +63,13 @@ function Snake() {
     var _this = this;
 
     document.addEventListener("keydown", function (event) {
-      if (event.key === "ArrowUp") {
+      if (event.key === "ArrowUp" && _this.direction != "down") {
         _this.direction = "up";
-      } else if (event.key === "ArrowDown") {
+      } else if (event.key === "ArrowDown" && _this.direction != "up") {
         _this.direction = "down";
-      } else if (event.key === "ArrowRight") {
+      } else if (event.key === "ArrowRight" && _this.direction != "left") {
         _this.direction = "right";
-      } else if (event.key === "ArrowLeft") {
+      } else if (event.key === "ArrowLeft" && _this.direction != "right") {
         _this.direction = "left";
       }
     });
@@ -112,8 +112,28 @@ function Snake() {
 
 function handleStart(event) {
   animate();
-} //ANIMATING THE GAME
+} // DIFFICULTY
 
+
+var difficultyLevel = document.getElementById("difficultyLevel"); //js object
+
+var handleDifficultyChange = function handleDifficultyChange(event) {
+  console.log("hello");
+
+  if (event.target.value == "slow") {
+    velocity = 150;
+  } else if (event.target.value == "medium") {
+    velocity = 100;
+  } else if (event.target.value == "fast") {
+    velocity = 50;
+  } else if (event.target.value == "turbo") {
+    velocity = 0;
+  }
+
+  return velocity;
+};
+
+difficultyLevel.addEventListener("change", handleDifficultyChange); //ANIMATING THE GAME
 
 var snake = new Snake();
 
@@ -125,6 +145,7 @@ function animate() {
 
   if (cherry.x === snake.array[0].x && cherry.y === snake.array[0].y) {
     snake.eat();
+    updateScore();
     cherry.x = randomX();
     cherry.y = randomY();
   } else {
@@ -136,11 +157,7 @@ function animate() {
     if (isgameOver()) {
       gameOverDisplay();
     } else requestAnimationFrame(animate);
-  }, velocity); // DISPLAY SCORE
-
-  var Currentscore = snake.array.length - initialSnakeLength;
-  var score = document.getElementById("score");
-  score.innerHTML = "Score: ".concat(Currentscore);
+  }, velocity);
 } // GAME OVER
 
 
@@ -163,4 +180,19 @@ function collision(x, y) {
   }
 
   return false;
-}
+} // DISPLAY SCORE
+
+
+function updateScore() {
+  var currentScore = snake.array.length - initialSnakeLength;
+  var score = document.getElementById("score");
+  score.innerHTML = "Score: ".concat(currentScore);
+} // //HIGHSCORE
+// const highestScore = window.localStorage.setItem('highScore', currentScore);
+// function handleHighScore() {
+//   if (currentScore > highestScore){
+//     alert ("A new high score!")
+//   }
+//   scoresArr.forEach (element) {
+//   }
+// }

@@ -6,21 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Snake</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="https://kit.fontawesome.com/d6b54e3fd7.js" crossorigin="anonymous"></script>
+    <script
+      src="https://kit.fontawesome.com/d6b54e3fd7.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <nav>
-      <button class="button button-start" onclick="handleStart(event)">Start Game</button>
+      <button class="button button-start" onclick="handleStart(event)">
+        Start Game
+      </button>
       <h1>Snake</h1>
-      <button class="button button-new" onclick="document.location.reload()">New Game</button>
+      <button class="button button-new" onclick="document.location.reload()">
+        New Game
+      </button>
     </nav>
     <main>
+      <div id="highScore">High Score:</div>
       <canvas></canvas>
     </main>
     <footer>
-        <div id="score">Score: 0</div>
-        <div>Created by Claire Huizenga 2022</div>
-        <a href="https://github.com/clairey259/nology_snake-js-game" target=”_blank”><i class="fa-brands fa-github"></i></a>
+      <div id="score">Score: 0</div>
+      <div>
+        Difficulty:
+        <select name="difficultyLevel" id="difficultyLevel">
+          <option value="slow">Slow</option>
+          <option value="medium">Medium</option>
+          <option value="fast">Fast</option>
+          <option value="turbo">Turbo Snake</option>
+        </select>
+      </div>
+      <div>Created by Claire Huizenga 2022</div>
+      <a
+        href="https://github.com/clairey259/nology_snake-js-game"
+        target="”_blank”"
+        ><i class="fa-brands fa-github"></i
+      ></a>
     </footer>
     <script src="script2.js"></script>
   </body>
