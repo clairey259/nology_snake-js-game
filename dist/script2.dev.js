@@ -3,7 +3,19 @@
 // GLOBAL VARIABLES
 var snakeColour = "black";
 var velocity = 100;
-var initialSnakeLength = 6; // ANIMATION CANVAS
+var initialSnakeLength = 6; // RANDOM COLOUR GENERATOR
+
+function getRandomColor() {
+  var letters = "0123456789ABCDEF";
+  var color = "#";
+
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+
+  return color;
+} // ANIMATION CANVAS
+
 
 var canvas = document.querySelector("canvas");
 canvas.width = 0.9 * window.innerWidth;
@@ -156,6 +168,11 @@ function animate() {
   setTimeout(function () {
     if (isgameOver()) {
       gameOverDisplay();
+
+      if (isHighScore()) {
+        setHighScore();
+        displayHighScore();
+      }
     } else requestAnimationFrame(animate);
   }, velocity);
 } // GAME OVER
@@ -186,9 +203,39 @@ function collision(x, y) {
 function updateScore() {
   var currentScore = snake.array.length - initialSnakeLength;
   var score = document.getElementById("score");
-  score.innerHTML = "Score: ".concat(currentScore);
+  score.innerHTML = currentScore;
 } // //HIGHSCORE
-// const highestScore = window.localStorage.setItem('highScore', currentScore);
+
+
+var highestScore = JSON.parse(window.localStorage.getItem('highScore'));
+document.getElementById("highScore").innerText = highestScore;
+
+var isHighScore = function isHighScore() {
+  currentScore = document.getElementById("score").innerText;
+  currentScoreNumber = parseFloat(currentScore);
+  console.log(currentScoreNumber);
+  console.log(highestScore);
+  console.log(parseFloat(highestScore));
+
+  if (currentScoreNumber > highestScore) {
+    return true;
+  }
+
+  return false;
+};
+
+var setHighScore = function setHighScore() {
+  currentScore = document.getElementById("score").innerText;
+  window.localStorage.setItem("highScore", JSON.stringify(currentScore));
+  document.getElementById("highScore").innerHTML = currentScore;
+};
+
+function displayHighScore() {
+  c.font = "bold 70px mono";
+  c.fillStyle = getRandomColor();
+  c.textAlign = "center";
+  c.fillText("High Score!", canvas.width / 2, canvas.height / 3);
+} // const highestScore = window.localStorage.setItem('highScore', currentScore);
 // function handleHighScore() {
 //   if (currentScore > highestScore){
 //     alert ("A new high score!")
