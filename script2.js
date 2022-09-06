@@ -111,9 +111,19 @@ function Snake() {
 }
 
 // START BUTTON FUNCTION
-function handleStart(event) {
+const startButton = document.getElementById("button-start")
+function handleStart() {
   animate();
 }
+startButton.addEventListener("click", handleStart)
+
+//NEW GAME BUTTON
+const newGameButton = document.getElementById("button-new")
+function handleNewGame() {
+  document.location.reload();
+}
+newGameButton.addEventListener("click", handleNewGame)
+
 
 // DIFFICULTY
 const difficultyLevel = document.getElementById("difficultyLevel"); //js object
@@ -218,14 +228,3 @@ function displayHighScore() {
   c.textAlign = "center"
   c.fillText("High Score!", canvas.width / 2, canvas.height / 3);
 }
-
-// const highestScore = window.localStorage.setItem('highScore', currentScore);
-// function handleHighScore() {
-//   if (currentScore > highestScore){
-
-//     alert ("A new high score!")
-//   }
-//   scoresArr.forEach (element) {
-
-//   }
-// }
