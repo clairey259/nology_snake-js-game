@@ -15,8 +15,10 @@ function getRandomColor() {
 
 // ANIMATION CANVAS
 const canvas = document.querySelector("canvas");
+if (screen.width <= 900) {
+  canvas.height = 0.55 * window.innerHeight;
+} else canvas.height = 0.7 * window.innerHeight;
 canvas.width = 0.9 * window.innerWidth;
-canvas.height = 0.7 * window.innerHeight;
 const c = canvas.getContext("2d");
 
 // BASIC BOX OBJECT
@@ -66,17 +68,44 @@ function Snake() {
   this.direction = "down";
 
   this.changeDirection = function (direction) {
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowUp" && this.direction != "down") {
-        this.direction = "up";
-      } else if (event.key === "ArrowDown" && this.direction != "up") {
-        this.direction = "down";
-      } else if (event.key === "ArrowRight" && this.direction != "left") {
-        this.direction = "right";
-      } else if (event.key === "ArrowLeft" && this.direction != "right") {
-        this.direction = "left";
-      }
-    });
+    if (screen.width > 900) {
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowUp" && this.direction != "down") {
+          this.direction = "up";
+        } else if (event.key === "ArrowDown" && this.direction != "up") {
+          this.direction = "down";
+        } else if (event.key === "ArrowRight" && this.direction != "left") {
+          this.direction = "right";
+        } else if (event.key === "ArrowLeft" && this.direction != "right") {
+          this.direction = "left";
+        }
+      });
+    } else {
+      const upButton = document.getElementById("up");
+      upButton.addEventListener("click", (event) => {
+        if (this.direction != "down") {
+          this.direction = "up";
+        }
+      });
+      const downButton = document.getElementById("down");
+      downButton.addEventListener("click", (event) => {
+        if (this.direction != "up") {
+          this.direction = "down";
+        }
+      });
+      const leftButton = document.getElementById("left");
+      leftButton.addEventListener("click", (event) => {
+        if (this.direction != "right") {
+          this.direction = "left";
+        }
+      });
+      const rightButton = document.getElementById("right");
+      rightButton.addEventListener("click", (event) => {
+        if (this.direction != "left") {
+          this.direction = "right";
+        }
+      });
+    }
   };
 
   this.draw = function () {
@@ -111,19 +140,18 @@ function Snake() {
 }
 
 // START BUTTON FUNCTION
-const startButton = document.getElementById("button-start")
+const startButton = document.getElementById("button-start");
 function handleStart() {
   animate();
 }
-startButton.addEventListener("click", handleStart)
+startButton.addEventListener("click", handleStart);
 
 //NEW GAME BUTTON
-const newGameButton = document.getElementById("button-new")
+const newGameButton = document.getElementById("button-new");
 function handleNewGame() {
   document.location.reload();
 }
-newGameButton.addEventListener("click", handleNewGame)
-
+newGameButton.addEventListener("click", handleNewGame);
 
 // DIFFICULTY
 const difficultyLevel = document.getElementById("difficultyLevel"); //js object
@@ -202,15 +230,15 @@ function updateScore() {
   score.innerHTML = currentScore;
 }
 // //HIGHSCORE
-const highestScore = JSON.parse(window.localStorage.getItem('highScore'));
-document.getElementById("highScore").innerText = highestScore
+const highestScore = JSON.parse(window.localStorage.getItem("highScore"));
+document.getElementById("highScore").innerText = highestScore;
 
 const isHighScore = () => {
   currentScore = document.getElementById("score").innerText;
   currentScoreNumber = parseFloat(currentScore);
   console.log(currentScoreNumber);
-  console.log(highestScore)
-  console.log(parseFloat(highestScore))
+  console.log(highestScore);
+  console.log(parseFloat(highestScore));
   if (currentScoreNumber > highestScore) {
     return true;
   }
@@ -225,6 +253,6 @@ const setHighScore = () => {
 function displayHighScore() {
   c.font = "bold 70px mono";
   c.fillStyle = getRandomColor();
-  c.textAlign = "center"
+  c.textAlign = "center";
   c.fillText("High Score!", canvas.width / 2, canvas.height / 3);
 }

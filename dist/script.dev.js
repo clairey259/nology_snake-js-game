@@ -1,6 +1,10 @@
 "use strict";
 
-// RANDOM COLOUR GENERATOR
+// GLOBAL VARIABLES
+var snakeColour = "black";
+var velocity = 100;
+var initialSnakeLength = 6; // RANDOM COLOUR GENERATOR
+
 function getRandomColor() {
   var letters = "0123456789ABCDEF";
   var color = "#";
@@ -14,55 +18,263 @@ function getRandomColor() {
 
 
 var canvas = document.querySelector("canvas");
+
+if (screen.width <= 900) {
+  canvas.height = 0.55 * window.innerHeight;
+} else canvas.height = 0.7 * window.innerHeight;
+
 canvas.width = 0.9 * window.innerWidth;
-canvas.height = 0.8 * window.innerHeight;
-var c = canvas.getContext("2d"); //GLOBAL VARIABLES
-// RANDOMISING 
+var c = canvas.getContext("2d"); // BASIC BOX OBJECT
 
-var randomX = Math.random() * canvas.width; //- radius * 2) + radius;
-
-var randomY = Math.random() * canvas.height; //- radius * 2) + radius;
-// CREATING SNAKE OBECT
-
-function Snake(x, y, w, h, v, colour) {
-  this.colour = colour;
+function BasicBox(x, y, h, w, colour) {
   this.x = x;
   this.y = y;
-  this.dx = v;
-  this.dy = v;
+  this.h = h;
   this.w = w;
-  this.h = h; //gets snake shape
+  this.colour = colour;
 
   this.draw = function () {
-    c.clearRect(0, 0, canvas.width, canvas.height);
     c.fillStyle = this.colour;
-    c.fillRect(this.x, this.y, this.w, this.h);
-  }; // gets snake to move and alerts when hits edge
+    c.fillRect(this.x, this.y, this.h, this.w, this.colour);
+  };
+} // CONSTRUCTING THE SNAKE
 
 
-  this.move = function () {
-    if (this.x > canvas.width || this.x < 0 || this.y > canvas.height || this.y < 0) {//alert ("Game over")
+function createInitialSnake(size) {
+  var snakeArr = [];
+  var y = 100;
+
+  for (var i = 0; i < size; i++) {
+    var x = 100;
+    var h = 10;
+    var w = 10;
+    var colour = snakeColour;
+    snakeArr.push(new BasicBox(x, y, h, w, colour));
+    y -= 10;
+  }
+
+  return snakeArr;
+} // CONSTRUCTING THE CHERRY
+
+
+function roundUpNearest10(num) {
+  return Math.ceil(num / 10) * 10;
+}
+
+function randomX() {
+  return roundUpNearest10(Math.random() * (canvas.width - 20) + 10);
+}
+
+function randomY() {
+  return roundUpNearest10(Math.random() * (canvas.height - 20) + 10);
+}
+
+var cherry = new BasicBox(randomX(), randomY(), 10, 10, "red"); // MOVING THE SNAKE
+
+function Snake() {
+  this.array = createInitialSnake(initialSnakeLength);
+  this.direction = "down";
+
+  this.changeDirection = function (direction) {
+    var _this = this;
+
+    if (screen.width > 900) {
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowUp" && _this.direction != "down") {
+          _this.direction = "up";
+        } else if (event.key === "ArrowDown" && _this.direction != "up") {
+          _this.direction = "down";
+        } else if (event.key === "ArrowRight" && _this.direction != "left") {
+          _this.direction = "right";
+        } else if (event.key === "ArrowLeft" && _this.direction != "right") {
+          _this.direction = "left";
+        }
+      });
+    } else {
+      var upButton = document.getElementById("up");
+      upButton.addEventListener("click", function (event) {
+        if (_this.direction != "down") {
+          _this.direction = "up";
+        }
+      });
+      var downButton = document.getElementById("down");
+      downButton.addEventListener("click", function (event) {
+        if (_this.direction != "up") {
+          _this.direction = "down";
+        }
+      });
+      var leftButton = document.getElementById("left");
+      leftButton.addEventListener("click", function (event) {
+        if (_this.direction != "right") {
+          _this.direction = "left";
+        }
+      });
+      var rightButton = document.getElementById("right");
+      rightButton.addEventListener("click", function (event) {
+        if (_this.direction != "left") {
+          _this.direction = "right";
+        }
+      });
+    }
+  };
+
+  this.draw = function () {
+    this.array.forEach(function (element) {
+      return element.draw();
+    });
+  };
+
+  this.append = function (element) {
+    if (this.direction === "down") {
+      element.y = this.array[0].y + 10;
+      element.x = this.array[0].x;
+    } else if (this.direction === "up") {
+      element.y = this.array[0].y - 10;
+      element.x = this.array[0].x;
+    } else if (this.direction === "right") {
+      element.x = this.array[0].x + 10;
+      element.y = this.array[0].y;
+    } else if (this.direction === "left") {
+      element.x = this.array[0].x - 10;
+      element.y = this.array[0].y;
     }
 
-    this.x += this.dx;
-    this.y += this.dy;
-    this.draw();
+    this.array.unshift(element);
   };
-} // NEW SNAKE
 
+  this.move = function () {
+    var lastElement = this.array.pop();
+    this.append(lastElement);
+  };
 
-var snakeOne = new Snake(randomX / 2, randomY / 2, 10, 80, 8, "black");
-snakeOne.move();
-var snakeRainbow = new Snake(100, 100, 10, 80, 8, getRandomColor());
-snakeRainbow.move(); // ANIMATE SNAKE
-
-function animate() {
-  requestAnimationFrame(animate);
-  c.clearRect(0, 0, innerWidth, innerHeight);
-  snakeOne.move();
+  this.eat = function () {
+    snake.append(new BasicBox(10, 10, 10, 10, "black"));
+  };
 } // START BUTTON FUNCTION
 
 
-function handleStart(event) {
+var startButton = document.getElementById("button-start");
+
+function handleStart() {
   animate();
+}
+
+startButton.addEventListener("click", handleStart); //NEW GAME BUTTON
+
+var newGameButton = document.getElementById("button-new");
+
+function handleNewGame() {
+  document.location.reload();
+}
+
+newGameButton.addEventListener("click", handleNewGame); // DIFFICULTY
+
+var difficultyLevel = document.getElementById("difficultyLevel"); //js object
+
+var handleDifficultyChange = function handleDifficultyChange(event) {
+  console.log("hello");
+
+  if (event.target.value == "slow") {
+    velocity = 150;
+  } else if (event.target.value == "medium") {
+    velocity = 100;
+  } else if (event.target.value == "fast") {
+    velocity = 50;
+  } else if (event.target.value == "turbo") {
+    velocity = 0;
+  }
+
+  return velocity;
+};
+
+difficultyLevel.addEventListener("change", handleDifficultyChange); //ANIMATING THE GAME
+
+var snake = new Snake();
+
+function animate() {
+  c.clearRect(0, 0, canvas.width, canvas.height); //  CLEARS CANVAS
+
+  snake.draw();
+  cherry.draw();
+
+  if (cherry.x === snake.array[0].x && cherry.y === snake.array[0].y) {
+    snake.eat();
+    updateScore();
+    cherry.x = randomX();
+    cherry.y = randomY();
+  } else {
+    snake.move();
+  }
+
+  snake.changeDirection();
+  setTimeout(function () {
+    if (isgameOver()) {
+      gameOverDisplay();
+
+      if (isHighScore()) {
+        setHighScore();
+        displayHighScore();
+      }
+    } else requestAnimationFrame(animate);
+  }, velocity);
+} // GAME OVER
+
+
+function gameOverDisplay() {
+  c.font = "bold 70px mono";
+  c.fillStyle = "#8b0000";
+  c.textAlign = "center";
+  c.fillText("Game Over", canvas.width / 2, canvas.height / 2);
+}
+
+var isgameOver = function isgameOver() {
+  if (snake.array[0].x < 0 || snake.array[0].y < 0 || snake.array[0].x > canvas.width || snake.array[0].y > canvas.height || collision(snake.array[0].x, snake.array[0].y)) {
+    return true;
+  } else return false;
+};
+
+function collision(x, y) {
+  for (var i = 1; i < snake.array.length; i++) {
+    if (x == snake.array[i].x && y == snake.array[i].y) return true;
+  }
+
+  return false;
+} // DISPLAY SCORE
+
+
+function updateScore() {
+  var currentScore = snake.array.length - initialSnakeLength;
+  var score = document.getElementById("score");
+  score.innerHTML = currentScore;
+} // //HIGHSCORE
+
+
+var highestScore = JSON.parse(window.localStorage.getItem("highScore"));
+document.getElementById("highScore").innerText = highestScore;
+
+var isHighScore = function isHighScore() {
+  currentScore = document.getElementById("score").innerText;
+  currentScoreNumber = parseFloat(currentScore);
+  console.log(currentScoreNumber);
+  console.log(highestScore);
+  console.log(parseFloat(highestScore));
+
+  if (currentScoreNumber > highestScore) {
+    return true;
+  }
+
+  return false;
+};
+
+var setHighScore = function setHighScore() {
+  currentScore = document.getElementById("score").innerText;
+  window.localStorage.setItem("highScore", JSON.stringify(currentScore));
+  document.getElementById("highScore").innerHTML = currentScore;
+};
+
+function displayHighScore() {
+  c.font = "bold 70px mono";
+  c.fillStyle = getRandomColor();
+  c.textAlign = "center";
+  c.fillText("High Score!", canvas.width / 2, canvas.height / 3);
 }

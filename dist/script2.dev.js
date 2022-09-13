@@ -218,7 +218,7 @@ function updateScore() {
 } // //HIGHSCORE
 
 
-var highestScore = JSON.parse(window.localStorage.getItem('highScore'));
+var highestScore = JSON.parse(window.localStorage.getItem("highScore"));
 document.getElementById("highScore").innerText = highestScore;
 
 var isHighScore = function isHighScore() {
