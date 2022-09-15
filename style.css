@@ -82,4 +82,8 @@ i {
     display: flex;
     justify-content: center;
   }
+
+  footer {
+    font-size: smaller;
+  }
 }
